@@ -19,7 +19,7 @@ function App() {
 
   const localVideo = document.createElement('video');
 
-  const socket = io("http://localhost:5000/");
+  const socket = io("/");
 
 
 
