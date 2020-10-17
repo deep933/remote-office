@@ -8,7 +8,7 @@ const { PeerServer } = require('peer');
 const peerServer = PeerServer({ port: 9000, path: '/myapp' });
 
 
-app.use(express.static(path.join(__dirname, 'build')));
+app.use(express.static(path.join(__dirname, '/build')));
     
 
 io.on('connection', socket => { 
@@ -23,7 +23,7 @@ io.on('connection', socket => {
 
 
 app.get('*', function(req, res) {
-    res.sendFile(path.join(__dirname, 'build', 'index.html'));
+    res.sendFile(path.join(__dirname, '/build', 'index.html'));
 });
 
 
