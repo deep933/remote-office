@@ -3,6 +3,7 @@ const app = express()
 const server = require("http").createServer(app);
 const io = require("socket.io")(server)
 const path = require('path');
+const port = 8080
 const { PeerServer } = require('peer');
 const peerServer = PeerServer({ port: 9000, path: '/myapp' });
 
@@ -29,4 +30,6 @@ app.get('*', function(req, res) {
 });
 
 
-server.listen(5000);
+server.listen(process.env.PORT || port, () => {
+    console.log(`Example app listening at`)
+  })
