@@ -18,7 +18,7 @@
     "webrtc-adapter": "^7.7.0"
   },
   "scripts": {
-    "start": "react-scripts start",
+    "start": "npm install && npm run build && node server.js",
     "build": "react-scripts build",
     "test": "react-scripts test",
     "eject": "react-scripts eject",
@@ -26,6 +26,9 @@
   },
   "eslintConfig": {
     "extends": "react-app"
+  },
+  "engines": {
+    "node": "10.x"
   },
   "browserslist": {
     "production": [
