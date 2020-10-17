@@ -21,9 +21,6 @@ io.on('connection', socket => {
 
 });
 
-app.use("/",(req,res)=>{
-    res.send("");
-})
 
 app.get('*', function(req, res) {
     res.sendFile(path.join(__dirname, 'build', 'index.html'));
