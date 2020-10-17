@@ -26,5 +26,5 @@ artifacts:
   files:
     - server.js
     - package-lock.json
-    - node_modules
-    - build
+    - node_modules/*
+    - build/*
