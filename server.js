@@ -14,21 +14,27 @@ app.use('/peerjs',peerServer)
 
 app.use(express.static(path.join(__dirname, '/build')));
     
-
 io.on('connection', socket => { 
 
-    socket.on('join-room', (roomId,userId)=>{
-        socket.join(roomId); 
-        console.log(roomId,userId);
-        io.to(roomId).emit("user-connected",userId);
-        socket.on('disconnect',()=>{
-            io.to(roomId).emit("user-disconnected",userId);
-        })
-      });
+  socket.on('join-room', (roomId,userId)=>{
+      socket.join(roomId); 
 
-  
+    const nouser = io.sockets.adapter.rooms[roomId];
+      io.to(roomId).emit("user-connected",userId,nouser.length);
+      socket.on('disconnect',()=>{
+        const nouser = io.sockets.adapter.rooms[roomId];
+          io.to(roomId).emit("user-disconnected",userId,nouser.length);
+      })
+    });
 
 });
+
+
+app.use('/ws',(req,res)=>{
+
+
+res.send("");
+})
 
 
 
