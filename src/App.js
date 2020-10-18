@@ -9,9 +9,9 @@ import './App.css';
 function App() {
   const roomId = 100;
   const peer = new Peer(undefined,{
-    host: 'https://remotee-office.herokuapp.com',
-    port: 9000,
-    path: '/myapp'
+   host: 'remotee-office.herokuapp.com',
+      port: 9000,
+      path: '/myapp'
   }); 
 
 
@@ -19,7 +19,7 @@ function App() {
 
   const localVideo = document.createElement('video');
 
-  const socket = io("https://remotee-office.herokuapp.com");
+  const socket = io();
 
 
 
