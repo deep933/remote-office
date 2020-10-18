@@ -11,8 +11,10 @@ function App() {
   const peer = new Peer(undefined); 
 
   const localVideo = document.createElement('video');
-
+  localVideo.muted = true
   const socket = io();
+
+  const peers= {}
 
 
 
@@ -26,16 +28,19 @@ function App() {
     audio:true
   }).then(stream=>{
     addVideoStream(localVideo,stream);
+
     socket.on("user-connected",userId=>{
       console.log("User connected:"+userId);
       connectToNewUser(userId,stream)
     })
+
     peer.on('call',call=>{
       call.answer(stream)
       const video2 = document.createElement('video')
       call.on('stream',uservideostream=>{
         addVideoStream(video2,uservideostream)
       })
+     
     })
   })
 
@@ -54,8 +59,19 @@ function App() {
     call.on('stream',recievedVideoStream=>{
 addVideoStream(video,recievedVideoStream)
     })
+    call.on('close',()=>{
+      video.remove()
+    })
+
+    peers[userId] = call
   }
 
+
+socket.on('user-disconnected',userId=>{
+  console.log("user disconnected",userId )
+console.log(peers)
+  if(peers[userId]) peers[userId].close()
+})
 
 
   socket.on('connect', () => {

@@ -21,9 +21,15 @@ io.on('connection', socket => {
         socket.join(roomId); 
         console.log(roomId,userId);
         io.to(roomId).emit("user-connected",userId);
+        socket.on('disconnect',()=>{
+            io.to(roomId).emit("user-disconnected",userId);
+        })
       });
 
+  
+
 });
+
 
 
 app.get('*', function(req, res) {
