@@ -4,8 +4,12 @@ const server = require("http").createServer(app);
 const io = require("socket.io")(server)
 const path = require('path');
 const port = 8080
-const { PeerServer } = require('peer');
-const peerServer = PeerServer({ port: 9000, path: '/myapp' });
+const { ExpressPeerServer } = require('peer');
+const peerServer =  ExpressPeerServer(server, {
+    path: '/myapp'
+  });
+
+app.use('/peerjs',peerServer)
 
 
 app.use(express.static(path.join(__dirname, '/build')));
