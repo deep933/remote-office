@@ -19,7 +19,7 @@ function App() {
 
   const localVideo = document.createElement('video');
 
-  const socket = io("/");
+  const socket = io("https://remotee-office.herokuapp.com");
 
 
 
