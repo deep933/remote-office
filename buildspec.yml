@@ -13,7 +13,7 @@ phases:
       - npm install
   build:
     commands:
-      - npm build
+      - npm run build
       - echo Compiling the Node.js code
   post_build:
     commands:

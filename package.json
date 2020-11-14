@@ -18,9 +18,9 @@
     "webrtc-adapter": "^7.7.0"
   },
   "scripts": {
-    "start": "npm install && npm run build && node server.js",
+    "start": "npm run build && node server.js",
     "build": "react-scripts build",
-    "br":"react-scripts build && npm run server",
+    "br": "react-scripts build && npm run server",
     "test": "react-scripts test",
     "eject": "react-scripts eject",
     "server": "node server.js"

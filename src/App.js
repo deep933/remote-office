@@ -1,70 +1,166 @@
-import React from 'react';
-import { useState, useEffect } from 'react';
-
+import React from 'react'
+import { useState, useEffect } from 'react'
+import adapter from 'webrtc-adapter'
 import logo from './logo.svg';
 import io from 'socket.io-client';
-import { v4 as uuid } from 'uuid'
-import Peer from 'peerjs'
+
 
 import './App.css';
 
 function App() {
-  const [roomId, setRoomId] = useState(10)
-  const [connectedUsers,setConnectedUsers] = useState([])
-  const [nouser,setNoUser] = useState(0);
-  const [screenShare, setScreenShare] = useState(false);
-  const [displayMediaOptions, setDispalyMediaOption] = useState({ video: true, audio: true })
-
-  useEffect(() => {
-    const socket = io();
-    const localVideo = document.getElementById('localVideo');
-    localVideo.muted = true
-
-    navigator.mediaDevices.getUserMedia(displayMediaOptions).then(stream=>{
-      localVideo.srcObject = stream;
-      localVideo.addEventListener('loadedmetadata',()=>{
-        localVideo.play()
-      })
-    })
-
-    socket.emit('join-room',roomId,uuid());
-
-
-    socket.on("user-connected", (userId,nouser) => {
-      setNoUser(nouser)
-
-      setConnectedUsers(connectedUsers => connectedUsers.concat(userId))
-      console.log("User connected:" + userId, connectedUsers,nouser);
-
-    })
   
+  let localVideo;
+  var firstPerson = false;
+  var socketCount = 0;
+  var socketId;
+  var localStream;
+  let socket;
+  var connections = [];
 
-    socket.on('user-disconnected', (userId,nouser) => {
-      setNoUser(nouser)
+  var peerConnectionConfig = {
+    'iceServers': [
+        {'urls': 'stun:stun.services.mozilla.com'},
+        {'urls': 'stun:stun.l.google.com:19302'},
+    ]
+  }
 
-     setConnectedUsers(connectedUsers => connectedUsers.filter(id=>id!=userId))
-     console.log("user disconnected"+ userId,connectedUsers)
+  useEffect(()=>{
+    pageReady()
+  },[])
 
-      })
+  function pageReady() {
 
-    },[])
+    localVideo = document.getElementById('localVideo');
 
-    useEffect(()=>{
-console.log(connectedUsers);
-    },[connectedUsers])
+    var constraints = {
+        video: true,
+        audio: false,
+    };
+
+    if(navigator.mediaDevices.getUserMedia) {
+        navigator.mediaDevices.getUserMedia(constraints)
+            .then(getUserMediaSuccess)
+            .then(function(){
+
+                socket = io.connect("http://localhost:3300", {secure: true});
+                socket.on('signal', gotMessageFromServer);    
+
+                socket.on('connect', function(){
+
+                    socketId = socket.id;
+
+                    socket.on('user-left', function(id){
+                        var video = document.querySelector('[data-socket="'+ id +'"]');
+                        var parentDiv = video.parentElement;
+                        video.parentElement.parentElement.removeChild(parentDiv);
+                    });
+
+
+                    socket.on('user-joined', function(id, count, clients){
+                        clients.forEach(function(socketListId) {
+                            if(!connections[socketListId]){
+                                connections[socketListId] = new RTCPeerConnection(peerConnectionConfig);
+                                //Wait for their ice candidate       
+                                connections[socketListId].onicecandidate = function(event){
+                                    if(event.candidate != null) {
+                                        console.log('SENDING ICE');
+                                        socket.emit('signal', socketListId, JSON.stringify({'ice': event.candidate}));
+                                    }
+                                }
+
+                                //Wait for their video stream
+                                connections[socketListId].onaddstream = function(event){
+                                    gotRemoteStream(event, socketListId)
+                                }    
+
+                                //Add the local video stream
+                                connections[socketListId].addStream(localStream);                                                                
+                            }
+                        });
+
+                        //Create an offer to connect with your local description
+                        
+                        if(count >= 2){
+                            connections[id].createOffer().then(function(description){
+                                connections[id].setLocalDescription(description).then(function() {
+                                    // console.log(connections);
+                                    socket.emit('signal', id, JSON.stringify({'sdp': connections[id].localDescription}));
+                                }).catch(e => console.log(e));        
+                            });
+                        }
+                    });                    
+                })       
+        
+            }); 
+    } else {
+        alert('Your browser does not support getUserMedia API');
+    } 
+}
+
+function getUserMediaSuccess(stream) {
+    localStream = stream;
+    localVideo.srcObject = localStream;
+    localVideo.addEventListener('loadedmetadata',()=>{
+      localVideo.play()
+    })}
+
+function gotRemoteStream(event, id) {
+
+    var videos = document.querySelectorAll('video'),
+        video  = document.createElement('video'),
+        div    = document.createElement('div')
+
+    video.setAttribute('data-socket', id);
+    video.srcObject         = event.stream;
+    video.autoplay    = true; 
+    video.muted       = true;
+    video.playsinline = true;
+    
+    div.appendChild(video);      
+    document.querySelector('.videos').appendChild(div);      
+}
+
+function gotMessageFromServer(fromId, message) {
+
+    //Parse the incoming signal
+    var signal = JSON.parse(message)
+
+    //Make sure it's not coming from yourself
+    if(fromId != socketId) {
+
+        if(signal.sdp){            
+            connections[fromId].setRemoteDescription(new RTCSessionDescription(signal.sdp)).then(function() {                
+                if(signal.sdp.type == 'offer') {
+                    connections[fromId].createAnswer().then(function(description){
+                        connections[fromId].setLocalDescription(description).then(function() {
+                            socket.emit('signal', fromId, JSON.stringify({'sdp': connections[fromId].localDescription}));
+                        }).catch(e => console.log(e));        
+                    }).catch(e => console.log(e));
+                }
+            }).catch(e => console.log(e));
+        }
+    
+        if(signal.ice) {
+            connections[fromId].addIceCandidate(new RTCIceCandidate(signal.ice)).catch(e => console.log(e));
+        }                
+    }
+}
 
 
   return (
     <div className="App">
-      {nouser} connected<br></br>
-{connectedUsers}
-      <br></br>
+       <div class="videos">
+            <div>
+                <video id="localVideo" muted></video>
 
-      <video id="localVideo"></video>
+            </div>
+        </div>
+        
+        <br />
+        <div id="connections"></div>
 
-      <div id="video-grid">
 
-      </div>
+
 
     </div>
   );
