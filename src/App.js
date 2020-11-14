@@ -34,7 +34,7 @@ function App() {
 
     var constraints = {
         video: true,
-        audio: false,
+        audio: true,
     };
 
     if(navigator.mediaDevices.getUserMedia) {
