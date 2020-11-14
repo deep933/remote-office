@@ -42,7 +42,7 @@ function App() {
             .then(getUserMediaSuccess)
             .then(function(){
 
-                socket = io.connect("http://localhost:3300", {secure: true});
+                socket = io.connect("https://remotee-office.herokuapp.com/", {secure: true});
                 socket.on('signal', gotMessageFromServer);    
 
                 socket.on('connect', function(){
