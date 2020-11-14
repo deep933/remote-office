@@ -151,7 +151,7 @@ function gotMessageFromServer(fromId, message) {
     <div className="App">
        <div class="videos">
             <div>
-                <video id="localVideo" muted></video>
+                <video id="localVideo"></video>
 
             </div>
         </div>
