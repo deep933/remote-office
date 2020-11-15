@@ -17,6 +17,8 @@ function Room(props) {
     var localStream;
     let socket;
     var connections = [];
+    let clientlist = []
+    let stream
 
     var peerConnectionConfig = {
         'iceServers': [
@@ -64,9 +66,10 @@ function Room(props) {
 
                         socket.on('user-joined', function (roomId,id,  clients) {
 
+                            clientlist = clients
                             console.log(roomId,id,count,clients)
                             const count = clients.length;
-                            clients.forEach(function (socketListId) {
+                            clientlist.forEach(function (socketListId) {
                                 if (!connections[socketListId]) {
                                     connections[socketListId] = new RTCPeerConnection(peerConnectionConfig);
                                     //Wait for their ice candidate       
@@ -93,7 +96,7 @@ function Room(props) {
                                 connections[id].createOffer().then(function (description) {
                                     connections[id].setLocalDescription(description).then(function () {
                                         // console.log(connections);
-                                        socket.emit('signal', id, JSON.stringify({ 'sdp': connections[id].localDescription }));
+                                        socket.emit('signal', id, JSON.stringify({ 'sdp': connections[id].localDescription,'type':'camera' }));
                                     }).catch(e => console.log(e));
                                 });
                             }
@@ -106,6 +109,47 @@ function Room(props) {
         }
     }
 
+    const handleScreenshare = (e) =>{
+        console.log(clientlist)
+        var displayMediaStreamConstraints = {
+            video: true // or pass HINTS
+        };
+        
+        if (navigator.mediaDevices.getDisplayMedia) {
+            navigator.mediaDevices.getDisplayMedia(displayMediaStreamConstraints)
+            .then(stream=>{
+handleReplaceStream(stream)
+                
+            }).catch(console.log);
+        } else {
+            navigator.getDisplayMedia(displayMediaStreamConstraints)
+            .then(stream=>{
+                handleReplaceStream(stream)
+            })
+            .catch(console.log);
+        }
+    }
+
+    const handleReplaceStream = (stream) =>{
+        clientlist.forEach(function (socketListId) {
+            if (connections[socketListId]) {
+            
+                //Add the local video stream
+
+                
+                connections[socketListId].removeStream(localStream)
+              connections[socketListId].addStream(stream)
+              connections[socketListId].createOffer().then(function (description) {
+                connections[socketListId].setLocalDescription(description).then(function () {
+                    // console.log(connections);
+                    socket.emit('signal', socketListId, JSON.stringify({ 'sdp': connections[socketListId].localDescription,'type':'screen' }));
+                }).catch(e => console.log(e));
+            });
+
+            }
+        });
+    }
+
     function getUserMediaSuccess(stream) {
         localStream = stream;
         localVideo.srcObject = localStream;
@@ -115,10 +159,20 @@ function Room(props) {
     }
 
     function gotRemoteStream(event, id) {
+        var v = document.querySelector('[data-socket="' + id + '"]');
+
+        if(!v){
 
         var videos = document.querySelectorAll('video'),
             video = document.createElement('video'),
-            div = document.createElement('div')
+            div = document.createElement('div'),
+            button  = document.createElement('button')
+            button.innerHTML="Mute"
+            button.className = "mt-2 bg-blue-600 h-10 pl-4 pr-4 text-white shadow-sm rounded-md"
+            button.addEventListener('click',(e)=>{
+                console.log(video.muted)
+                video.muted = !video.muted
+            })
 
         video.setAttribute('data-socket', id);
         video.srcObject = event.stream;
@@ -126,7 +180,15 @@ function Room(props) {
         video.playsinline = true;
 
         div.appendChild(video);
+        div.appendChild(button);
         document.querySelector('.videos').appendChild(div);
+        }
+        else{
+            v.srcObject = event.stream;
+            v.autoplay = true;
+            v.playsinline = true;
+            
+        }
     }
 
     function gotMessageFromServer(fromId, message) {
@@ -140,6 +202,17 @@ function Room(props) {
             if (signal.sdp) {
                 connections[fromId].setRemoteDescription(new RTCSessionDescription(signal.sdp)).then(function () {
                     if (signal.sdp.type == 'offer') {
+                        if(signal.type == 'screen'){
+                            var v = document.querySelector('[data-socket="' +fromId + '"]')
+                            v.style.transform = "scaleX(1)"
+                            v.style.position = "fixed"
+                            v.style.width = "100%"
+                            v.style.height = "100%"
+                            v.style.top = "0"
+                            v.style.left = "0"
+    
+
+                        }
                         connections[fromId].createAnswer().then(function (description) {
                             connections[fromId].setLocalDescription(description).then(function () {
                                 socket.emit('signal', fromId, JSON.stringify({ 'sdp': connections[fromId].localDescription }));
@@ -161,6 +234,8 @@ function Room(props) {
             <div class="videos grid grid-cols-3 gap-3 m-16">
                 <div>
                     <video id="localVideo" muted></video>
+                    <button onClick={handleScreenshare} className = "mt-2 bg-blue-600 h-10 pl-4 pr-4 text-white shadow-sm rounded-md"
+>Screenshare</button>
 
                 </div>
             </div>
