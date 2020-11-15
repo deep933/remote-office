@@ -158,7 +158,7 @@ function Room(props) {
 
     return (
         <div className="Room">
-            <div class="videos grid grid-cols-3">
+            <div class="videos grid grid-cols-3 gap-3 m-16">
                 <div>
                     <video id="localVideo" muted></video>
 
