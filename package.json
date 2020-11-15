@@ -22,7 +22,7 @@
   },
   "scripts": {
     "watch": "npm-watch",
-    "start": "npm run build && node server.js",
+    "start": "node server.js",
     "build": "react-scripts build",
     "dev": "npm run watch:css && react-scripts build && npm run server",
     "test": "react-scripts test",
