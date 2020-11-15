@@ -3,6 +3,7 @@ import { useState, useEffect } from 'react'
 import adapter from 'webrtc-adapter'
 import io from 'socket.io-client';
 import { useLocation } from "react-router-dom";
+import queryString from 'query-string';
 
 
 import './Room.css';
@@ -25,7 +26,8 @@ function Room(props) {
     }
 
     useEffect(() => {
-        pageReady(location.state.roomId)
+        const query = queryString.parse(location.search)
+        pageReady(query.roomId)
     }, [])
 
     function pageReady(roomId) {
@@ -44,11 +46,8 @@ function Room(props) {
 
                 
 
-                    socket = io.connect("https://remotee-office.herokuapp.com/", { secure: true });
-
-                
+                    socket = io.connect("https://remotee-office.herokuapp.com/", { secure: true });                
                     socket.on('signal', gotMessageFromServer);
-
                     socket.on('connect', function () {
 
                         socketId = socket.id;
@@ -159,7 +158,7 @@ function Room(props) {
 
     return (
         <div className="Room">
-            <div class="videos">
+            <div class="videos grid grid-cols-3">
                 <div>
                     <video id="localVideo" muted></video>
 

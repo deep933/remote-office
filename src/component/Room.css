@@ -1,12 +1,8 @@
 
 
 video{
-width: 300px;
-  height: 300px;
+width: 100%;
   object-fit: cover;
   -webkit-transform: scaleX(-1);
   transform: scaleX(-1);
-}
-.videos{
-  display: flex;
 }
