@@ -185,6 +185,7 @@ function Room(props) {
             video.setAttribute('data-socket', id);
             video.srcObject = event.stream;
             video.autoplay = true;
+            video.muted = true;
             video.playsinline = true;
 
             video.addEventListener('click', handleVideoClickListner)
