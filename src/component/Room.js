@@ -137,7 +137,6 @@ function Room(props) {
                 //Add the local video stream
 
 
-                connections[socketListId].removeStream(localStream)
                 connections[socketListId].addStream(stream)
                 connections[socketListId].createOffer().then(function (description) {
                     connections[socketListId].setLocalDescription(description).then(function () {
@@ -161,28 +160,32 @@ function Room(props) {
     function gotRemoteStream(event, id) {
         var v = document.querySelector('[data-socket="' + id + '"]');
 
-        if (!v) {
-
+        
             let videos = document.querySelectorAll('video'),
                 video = document.createElement('video'),
-                div = document.createElement('div'),
+                vdiv = document.createElement('div'),
                 control_div = document.createElement('div'),
                 button = document.createElement('button')
 
-                div.className = "relative"
+                vdiv.className = "relative"
                 control_div.className = "control-panel absolute left-0 top-0 pt-2 pl-2"
-                button.className = "mute bg-black h-10 w-10 pl-4 pr-4 text-white shadow-sm rounded-md outline-none focus:outline-none"
+                button.className = "unmute bg-black h-10 w-10 pl-4 pr-4 text-white shadow-sm rounded-md outline-none focus:outline-none"
                 button.addEventListener('click', (e) => {
                 video.muted = !video.muted
                 if(video.muted){
-                    e.target.classList.replace("unmute","mute")
+                    e.target.classList.replace("mute","unmute")
                 }
                 else{
-                    e.target.classList.replace("mute","unmute")
+                    e.target.classList.replace("unmute","mute")
                 }
             })
 
+            if(v){
+                video.setAttribute('data-socket-2', id);
+
+            }
             video.setAttribute('data-socket', id);
+            
             video.srcObject = event.stream;
             video.autoplay = true;
             video.muted = true;
@@ -192,16 +195,13 @@ function Room(props) {
             video.addEventListener('click', handleVideoClickListner)
 
             control_div.appendChild(button)
-            div.appendChild(video);
-            div.appendChild(control_div);
-            document.querySelector('.videos').appendChild(div);
-        }
-        else {
-            v.srcObject = event.stream;
-            v.autoplay = true;
-            v.playsinline = true;
+            vdiv.appendChild(video);
+            vdiv.appendChild(control_div);
+            document.querySelector('.videos').appendChild(vdiv);
 
-        }
+          
+            
+       
     }
 
     function gotMessageFromServer(fromId, message) {
@@ -237,9 +237,9 @@ function Room(props) {
     }
 
     const handleScreenShareResponse = (id) =>{
-        let video = document.querySelector('[data-socket="' + id + '"]')
+        let video = document.querySelector('[data-socket-2="' + id + '"]')
         video.style.transform = "scaleX(1)"
-        video.className = "zoomin"
+        // video.className = "zoomin"
     }
 
     const handleVideoClickListner = (e) =>{
