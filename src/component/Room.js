@@ -187,7 +187,7 @@ function Room(props) {
             video.autoplay = true;
             video.muted = true;
             video.loop = true;
-            video.playsinline = true;
+            video.playsInline = true;
 
             video.addEventListener('click', handleVideoClickListner)
 
