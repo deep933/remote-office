@@ -251,6 +251,17 @@ function Room(props) {
         }
     }
 
+    const handleLocalVideoMic = (e) =>{
+        let video = document.getElementById("localVideo")
+        video.muted = !video.muted
+                if(video.muted){
+                    e.target.classList.replace("mute","unmute")
+                }
+                else{
+                    e.target.classList.replace("unmute","mute")
+                }
+    } 
+
     return (
         <div className="Room">
             <div class="videos grid md:grid-cols-3 sm:grid-cols-1 gap-3 md:m-16 sm:m-4 m-4">
@@ -258,6 +269,8 @@ function Room(props) {
                     <video id="localVideo" muted loop playsInline autoPlay></video>
                     <div className="control-panel absolute left-0 top-0 pt-2 pl-2">
                     <button onClick={handleScreenshare} className="screenshare bg-black h-10 w-10 pl-4 pr-4 text-white shadow-sm rounded-md outline-none focus:outline-none"
+                    ></button>
+                    <button onClick={handleLocalVideoMic} className="unmute bg-black ml-2 h-10 w-10 pl-4 pr-4 text-white shadow-sm rounded-md outline-none focus:outline-none"
                     ></button>
                     </div>
                     
