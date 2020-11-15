@@ -179,6 +179,16 @@ handleReplaceStream(stream)
         video.autoplay = true;
         video.playsinline = true;
 
+        video.addEventListener('click',(e)=>{
+
+            if(e.target.className == "zoom"){
+                e.target.className="djd"
+            }
+            else{
+                e.target.className = "zoom"
+            }
+        })
+
         div.appendChild(video);
         div.appendChild(button);
         document.querySelector('.videos').appendChild(div);
@@ -205,13 +215,8 @@ handleReplaceStream(stream)
                         if(signal.type == 'screen'){
                             var v = document.querySelector('[data-socket="' +fromId + '"]')
                             v.style.transform = "scaleX(1)"
-                            v.style.position = "fixed"
-                            v.style.width = "100%"
-                            v.style.height = "100%"
-                            v.style.top = "0"
-                            v.style.left = "0"
+                            v.className = "zoom"
     
-
                         }
                         connections[fromId].createAnswer().then(function (description) {
                             connections[fromId].setLocalDescription(description).then(function () {
