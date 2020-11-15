@@ -21,7 +21,7 @@
   },
   "scripts": {
     "watch": "npm-watch",
-    "start": "npm run watch:css && npm run build && node server.js",
+    "start": "npm run build && node server.js",
     "build": "react-scripts build",
     "br": "react-scripts build && npm run server",
     "test": "react-scripts test",
