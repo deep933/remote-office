@@ -46,14 +46,14 @@ function Room(props) {
                 .then(getUserMediaSuccess)
                 .then(function () {
 
-                
 
-                    socket = io.connect("https://remotee-office.herokuapp.com/", { secure: true });                
+
+                    socket = io.connect("https://remotee-office.herokuapp.com/", { secure: true });
                     socket.on('signal', gotMessageFromServer);
                     socket.on('connect', function () {
 
                         socketId = socket.id;
-                        console.log(socketId,roomId)
+                        console.log(socketId, roomId)
 
                         socket.emit('join', roomId)
 
@@ -64,10 +64,10 @@ function Room(props) {
                         });
 
 
-                        socket.on('user-joined', function (roomId,id,  clients) {
+                        socket.on('user-joined', function (roomId, id, clients) {
 
                             clientlist = clients
-                            console.log(roomId,id,count,clients)
+                            console.log(roomId, id, count, clients)
                             const count = clients.length;
                             clientlist.forEach(function (socketListId) {
                                 if (!connections[socketListId]) {
@@ -96,7 +96,7 @@ function Room(props) {
                                 connections[id].createOffer().then(function (description) {
                                     connections[id].setLocalDescription(description).then(function () {
                                         // console.log(connections);
-                                        socket.emit('signal', id, JSON.stringify({ 'sdp': connections[id].localDescription,'type':'camera' }));
+                                        socket.emit('signal', id, JSON.stringify({ 'sdp': connections[id].localDescription, 'type': 'camera' }));
                                     }).catch(e => console.log(e));
                                 });
                             }
@@ -109,42 +109,42 @@ function Room(props) {
         }
     }
 
-    const handleScreenshare = (e) =>{
+    const handleScreenshare = (e) => {
         console.log(clientlist)
         var displayMediaStreamConstraints = {
             video: true // or pass HINTS
         };
-        
+
         if (navigator.mediaDevices.getDisplayMedia) {
             navigator.mediaDevices.getDisplayMedia(displayMediaStreamConstraints)
-            .then(stream=>{
-handleReplaceStream(stream)
-                
-            }).catch(console.log);
+                .then(stream => {
+                    handleReplaceStream(stream)
+
+                }).catch(console.log);
         } else {
             navigator.getDisplayMedia(displayMediaStreamConstraints)
-            .then(stream=>{
-                handleReplaceStream(stream)
-            })
-            .catch(console.log);
+                .then(stream => {
+                    handleReplaceStream(stream)
+                })
+                .catch(console.log);
         }
     }
 
-    const handleReplaceStream = (stream) =>{
+    const handleReplaceStream = (stream) => {
         clientlist.forEach(function (socketListId) {
             if (connections[socketListId]) {
-            
+
                 //Add the local video stream
 
-                
+
                 connections[socketListId].removeStream(localStream)
-              connections[socketListId].addStream(stream)
-              connections[socketListId].createOffer().then(function (description) {
-                connections[socketListId].setLocalDescription(description).then(function () {
-                    // console.log(connections);
-                    socket.emit('signal', socketListId, JSON.stringify({ 'sdp': connections[socketListId].localDescription,'type':'screen' }));
-                }).catch(e => console.log(e));
-            });
+                connections[socketListId].addStream(stream)
+                connections[socketListId].createOffer().then(function (description) {
+                    connections[socketListId].setLocalDescription(description).then(function () {
+                        // console.log(connections);
+                        socket.emit('signal', socketListId, JSON.stringify({ 'sdp': connections[socketListId].localDescription, 'type': 'screen' }));
+                    }).catch(e => console.log(e));
+                });
 
             }
         });
@@ -161,43 +161,44 @@ handleReplaceStream(stream)
     function gotRemoteStream(event, id) {
         var v = document.querySelector('[data-socket="' + id + '"]');
 
-        if(!v){
+        if (!v) {
 
-        var videos = document.querySelectorAll('video'),
-            video = document.createElement('video'),
-            div = document.createElement('div'),
-            button  = document.createElement('button')
-            button.innerHTML="Mute"
-            button.className = "mt-2 bg-blue-600 h-10 pl-4 pr-4 text-white shadow-sm rounded-md"
-            button.addEventListener('click',(e)=>{
-                console.log(video.muted)
+            let videos = document.querySelectorAll('video'),
+                video = document.createElement('video'),
+                div = document.createElement('div'),
+                control_div = document.createElement('div'),
+                button = document.createElement('button')
+
+                div.className = "relative"
+                control_div.className = "control-panel absolute left-0 top-0 pt-2 pl-2"
+                button.className = "mute bg-black h-10 w-10 pl-4 pr-4 text-white shadow-sm rounded-md outline-none focus:outline-none"
+                button.addEventListener('click', (e) => {
                 video.muted = !video.muted
+                if(video.muted){
+                    e.target.classList.replace("unmute","mute")
+                }
+                else{
+                    e.target.classList.replace("mute","unmute")
+                }
             })
 
-        video.setAttribute('data-socket', id);
-        video.srcObject = event.stream;
-        video.autoplay = true;
-        video.playsinline = true;
+            video.setAttribute('data-socket', id);
+            video.srcObject = event.stream;
+            video.autoplay = true;
+            video.playsinline = true;
 
-        video.addEventListener('click',(e)=>{
+            video.addEventListener('click', handleVideoClickListner)
 
-            if(e.target.className == "zoom"){
-                e.target.className="djd"
-            }
-            else{
-                e.target.className = "zoom"
-            }
-        })
-
-        div.appendChild(video);
-        div.appendChild(button);
-        document.querySelector('.videos').appendChild(div);
+            control_div.appendChild(button)
+            div.appendChild(video);
+            div.appendChild(control_div);
+            document.querySelector('.videos').appendChild(div);
         }
-        else{
+        else {
             v.srcObject = event.stream;
             v.autoplay = true;
             v.playsinline = true;
-            
+
         }
     }
 
@@ -212,11 +213,11 @@ handleReplaceStream(stream)
             if (signal.sdp) {
                 connections[fromId].setRemoteDescription(new RTCSessionDescription(signal.sdp)).then(function () {
                     if (signal.sdp.type == 'offer') {
-                        if(signal.type == 'screen'){
-                            var v = document.querySelector('[data-socket="' +fromId + '"]')
-                            v.style.transform = "scaleX(1)"
-                            v.className = "zoom"
-    
+                        if (signal.type == 'screen') {
+                            handleScreenShareResponse(fromId)
+                        }
+                        else{
+
                         }
                         connections[fromId].createAnswer().then(function (description) {
                             connections[fromId].setLocalDescription(description).then(function () {
@@ -233,14 +234,31 @@ handleReplaceStream(stream)
         }
     }
 
+    const handleScreenShareResponse = (id) =>{
+        let video = document.querySelector('[data-socket="' + id + '"]')
+        video.style.transform = "scaleX(1)"
+        video.className = "zoomin"
+    }
+
+    const handleVideoClickListner = (e) =>{
+        if (e.target.className == "zoomin") {
+            e.target.className = "zoomout"
+        }
+        else {
+            e.target.className = "zoomin"
+        }
+    }
 
     return (
         <div className="Room">
-            <div class="videos grid grid-cols-3 gap-3 m-16">
-                <div>
+            <div class="videos grid md:grid-cols-3 sm:grid-cols-1 gap-3 md:m-16 sm:m-4 m-4">
+                <div className="relative">
                     <video id="localVideo" muted></video>
-                    <button onClick={handleScreenshare} className = "mt-2 bg-blue-600 h-10 pl-4 pr-4 text-white shadow-sm rounded-md"
->Screenshare</button>
+                    <div className="control-panel absolute left-0 top-0 pt-2 pl-2">
+                    <button onClick={handleScreenshare} className="screenshare bg-black h-10 w-10 pl-4 pr-4 text-white shadow-sm rounded-md outline-none focus:outline-none"
+                    ></button>
+                    </div>
+                    
 
                 </div>
             </div>
