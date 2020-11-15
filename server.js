@@ -11,32 +11,26 @@ const port = 3300
 app.use(express.static(path.join(__dirname, '/build')));
     
 io.on('connection', function(socket){
-	io.sockets.emit("user-joined", socket.id, io.engine.clientsCount, Object.keys(io.sockets.clients().sockets));
+
+
+  socket.on('join',(roomId)=>{
+
+    console.log(roomId)
+    socket.join(roomId)
+    io.to(roomId).emit("user-joined", roomId, socket.id, Object.keys(io.of('/').adapter.rooms[roomId].sockets));
+
+  });
 
 	socket.on('signal', (toId, message) => {
+    console.log(toId,message);
 		io.to(toId).emit('signal', socket.id, message);
   	});
 
-    socket.on("message", function(data){
-		io.sockets.emit("broadcast-message", socket.id, data);
-    })
 
 	socket.on('disconnect', function() {
 		io.sockets.emit("user-left", socket.id);
 	})
 });
-
-app.use('/',(req,res)=>{
-	res.send("Hello!!")
-})
-
-
-app.use('/ws',(req,res)=>{
-
-
-res.send("");
-})
-
 
 
 app.get('*', function(req, res) {
@@ -45,5 +39,5 @@ app.get('*', function(req, res) {
 
 
 server.listen(process.env.PORT || port, () => {
-    console.log(`Example app listening at`)
+    console.log(`Example app listening at ${port}`)
   })
