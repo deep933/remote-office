@@ -277,7 +277,7 @@ function Room(props) {
 
     return (
         <div className="Room">
-            <div className="mb-6 flex bg-gray-200 p-2 text-gray-700 text-sm items-center justify-center">
+            <div className="mb-6 flex bg-gray-200 p-2 text-gray-700 text-sm items-center justify-center sm:flex-col md:flex-row lg:flex-row flex-col">
     Invite Others <p className="text-blue-600 ml-4">{window.location.href}</p><button data-clipboard-text={window.location.href} className="copy bg-blue-600 ml-4 h-8 text-sm  pl-4 pr-4 text-white shadow-sm rounded-md outline-none focus:outline-none">Copy & Share</button>
             </div>
             <div class="videos grid md:grid-cols-3 sm:grid-cols-1 gap-3 md:m-6 sm:m-4 m-4">
