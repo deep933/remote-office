@@ -196,8 +196,8 @@ function Room(props) {
                 vdiv.style.paddingTop = "75%"
                 control_div.className = "flex control-panel absolute left-0 top-0 pt-2 pl-2"
                 zoomoutbtn.className = "zoomout bg-black h-8 w-8 text-sm text-white shadow-sm rounded-md outline-none focus:outline-none"
-                button.className = "unmute bg-black h-8 text-sm  ml-2 pl-4 pr-4 text-white shadow-sm rounded-md outline-none focus:outline-none"
-                button.innerText = "Unmute"
+                button.className = "mute bg-black h-8 text-sm  ml-2 pl-4 pr-4 text-white shadow-sm rounded-md outline-none focus:outline-none"
+                button.innerText = "Mute"
                 button.addEventListener('click', (e) => {
                 video.muted = !video.muted
                 if(video.muted){
@@ -218,7 +218,7 @@ function Room(props) {
             
             video.srcObject = event.stream;
             video.autoplay = true;
-            video.muted = true;
+            video.muted = false;
             video.loop = true;
             video.playsInline = true;
 
