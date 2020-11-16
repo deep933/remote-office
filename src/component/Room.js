@@ -4,6 +4,7 @@ import adapter from 'webrtc-adapter'
 import io from 'socket.io-client';
 import { useLocation } from "react-router-dom";
 import queryString from 'query-string';
+import ClipboardJs from 'clipboard'
 
 
 import './Room.css';
@@ -22,13 +23,18 @@ function Room(props) {
 
     var peerConnectionConfig = {
         'iceServers': [
+            // {
+            //     urls: 'turn:numb.viagenie.ca',
+            //     username: 'deepmal933@gmail.com'            },
+            // // },
             { 'urls': 'stun:stun.services.mozilla.com' },
-            { 'urls': 'stun:stun.l.google.com:19302' },
+            { 'urls': 'stun:stun.l.google.com:19302' }
         ]
     }
 
     useEffect(() => {
         const query = queryString.parse(location.search)
+        new ClipboardJs('.copy')
         pageReady(query.roomId)
     }, [])
 
@@ -169,14 +175,17 @@ function Room(props) {
 
                 vdiv.className = "relative"
                 control_div.className = "control-panel absolute left-0 top-0 pt-2 pl-2"
-                button.className = "unmute bg-black h-10 w-10 pl-4 pr-4 text-white shadow-sm rounded-md outline-none focus:outline-none"
+                button.className = "unmute bg-blue-600 h-8 text-sm  pl-4 pr-4 text-white shadow-sm rounded-md outline-none focus:outline-none"
+                button.innerText = "Unmute"
                 button.addEventListener('click', (e) => {
                 video.muted = !video.muted
                 if(video.muted){
                     e.target.classList.replace("mute","unmute")
+                    e.target.innerText = "Unmute"
                 }
                 else{
                     e.target.classList.replace("unmute","mute")
+                    e.target.innerText = "Mute"
                 }
             })
 
@@ -256,22 +265,28 @@ function Room(props) {
         video.muted = !video.muted
                 if(video.muted){
                     e.target.classList.replace("mute","unmute")
+                    e.target.value = "unmute"
+                    
                 }
                 else{
                     e.target.classList.replace("unmute","mute")
+                    e.target.valye = "mute"
+
                 }
     } 
 
     return (
         <div className="Room">
-            <div class="videos grid md:grid-cols-3 sm:grid-cols-1 gap-3 md:m-16 sm:m-4 m-4">
+            <div className="mb-6 flex bg-gray-200 p-2 text-gray-700 text-sm items-center justify-center">
+    Invite Others <p className="text-blue-600 ml-4">{window.location.href}</p><button data-clipboard-text={window.location.href} className="copy bg-blue-600 ml-4 h-8 text-sm  pl-4 pr-4 text-white shadow-sm rounded-md outline-none focus:outline-none">Copy & Share</button>
+            </div>
+            <div class="videos grid md:grid-cols-3 sm:grid-cols-1 gap-3 md:m-6 sm:m-4 m-4">
                 <div className="relative">
                     <video id="localVideo" muted loop playsInline autoPlay></video>
                     <div className="control-panel absolute left-0 top-0 pt-2 pl-2">
                     <button onClick={handleScreenshare} className="screenshare bg-black h-10 w-10 pl-4 pr-4 text-white shadow-sm rounded-md outline-none focus:outline-none"
                     ></button>
-                    <button onClick={handleLocalVideoMic} className="unmute bg-black ml-2 h-10 w-10 pl-4 pr-4 text-white shadow-sm rounded-md outline-none focus:outline-none"
-                    ></button>
+           
                     </div>
                     
 
