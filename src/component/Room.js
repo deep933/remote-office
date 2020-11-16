@@ -33,6 +33,8 @@ function Room(props) {
     }
 
     useEffect(() => {
+
+        document.body.className = "bg-green-800"
         const query = queryString.parse(location.search)
         new ClipboardJs('.copy')
         pageReady(query.roomId)
@@ -171,12 +173,14 @@ function Room(props) {
                 video = document.createElement('video'),
                 vdiv = document.createElement('div'),
                 control_div = document.createElement('div'),
+                zoomoutbtn = document.createElement('button'),
                 button = document.createElement('button')
 
                 vdiv.className = "relative w-full"
                 vdiv.style.paddingTop = "75%"
-                control_div.className = "control-panel absolute left-0 top-0 pt-2 pl-2"
-                button.className = "unmute bg-blue-600 h-8 text-sm  pl-4 pr-4 text-white shadow-sm rounded-md outline-none focus:outline-none"
+                control_div.className = "flex control-panel absolute left-0 top-0 pt-2 pl-2"
+                zoomoutbtn.className = "zoomout bg-black h-8 w-8 text-sm text-white shadow-sm rounded-md outline-none focus:outline-none"
+                button.className = "unmute bg-black h-8 text-sm  ml-2 pl-4 pr-4 text-white shadow-sm rounded-md outline-none focus:outline-none"
                 button.innerText = "Unmute"
                 button.addEventListener('click', (e) => {
                 video.muted = !video.muted
@@ -202,8 +206,20 @@ function Room(props) {
             video.loop = true;
             video.playsInline = true;
 
-            video.addEventListener('click', handleVideoClickListner)
+            
 
+            zoomoutbtn.addEventListener('click',()=>{
+               
+                    video.className = "zoomin"
+            })
+
+            video.addEventListener('click',()=>{
+                if (video.className == "zoomin") {
+                    video.className = "zoomout"
+                }
+            })
+
+            control_div.appendChild(zoomoutbtn)
             control_div.appendChild(button)
             vdiv.appendChild(video);
             vdiv.appendChild(control_div);
@@ -278,8 +294,8 @@ function Room(props) {
 
     return (
         <div className="Room">
-            <div className="mb-6 flex bg-gray-200 p-2 text-gray-700 text-sm items-center justify-center sm:flex-col md:flex-row lg:flex-row flex-col">
-    Invite Others <p className="text-blue-600 ml-4">{window.location.href}</p><button data-clipboard-text={window.location.href} className="copy bg-blue-600 ml-4 h-8 text-sm  pl-4 pr-4 text-white shadow-sm rounded-md outline-none focus:outline-none">Copy & Share</button>
+            <div className="topstrip mb-6 flex p-2 text-white text-sm items-center justify-center sm:flex-col md:flex-row lg:flex-row flex-col">
+    Invite Others <p className="text-white ml-4">{window.location.href}</p><button data-clipboard-text={window.location.href} className="copy bg-black ml-4 h-8 text-sm  pl-4 pr-4 text-white shadow-sm rounded-md outline-none focus:outline-none">Copy & Share</button>
             </div>
             <div class="videos grid md:grid-cols-3 sm:grid-cols-1 gap-3 md:m-6 sm:m-4 m-4">
                 <div className="vcontainer relative" >
