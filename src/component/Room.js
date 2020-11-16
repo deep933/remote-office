@@ -282,7 +282,7 @@ function Room(props) {
     Invite Others <p className="text-blue-600 ml-4">{window.location.href}</p><button data-clipboard-text={window.location.href} className="copy bg-blue-600 ml-4 h-8 text-sm  pl-4 pr-4 text-white shadow-sm rounded-md outline-none focus:outline-none">Copy & Share</button>
             </div>
             <div class="videos grid md:grid-cols-3 sm:grid-cols-1 gap-3 md:m-6 sm:m-4 m-4">
-                <div className="relative">
+                <div className="vcontainer relative" >
                     <video id="localVideo" muted loop playsInline autoPlay></video>
                     <div className="control-panel absolute left-0 top-0 pt-2 pl-2">
                     <button onClick={handleScreenshare} className="screenshare bg-black h-10 w-10 pl-4 pr-4 text-white shadow-sm rounded-md outline-none focus:outline-none"
