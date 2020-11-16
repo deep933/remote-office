@@ -23,12 +23,28 @@ function Room(props) {
 
     var peerConnectionConfig = {
         'iceServers': [
-            // {
-            //     urls: 'turn:numb.viagenie.ca',
-            //     username: 'deepmal933@gmail.com'            },
-            // // },
-            { 'urls': 'stun:stun.services.mozilla.com' },
-            { 'urls': 'stun:stun.l.google.com:19302' }
+            {
+                "url": "stun:global.stun.twilio.com:3478?transport=udp",
+                "urls": "stun:global.stun.twilio.com:3478?transport=udp"
+              },
+              {
+                "url": "turn:global.turn.twilio.com:3478?transport=udp",
+                "username": "f6180cc87f3e96d0ec60ef1eb4a88f89fde83f6d969bf53eae58c89a53a0981f",
+                "urls": "turn:global.turn.twilio.com:3478?transport=udp",
+                "credential": "aQcfINjhZF21SpfVot1ALXExLZ6IgKlm30m6TOCoYyA="
+              },
+              {
+                "url": "turn:global.turn.twilio.com:3478?transport=tcp",
+                "username": "f6180cc87f3e96d0ec60ef1eb4a88f89fde83f6d969bf53eae58c89a53a0981f",
+                "urls": "turn:global.turn.twilio.com:3478?transport=tcp",
+                "credential": "aQcfINjhZF21SpfVot1ALXExLZ6IgKlm30m6TOCoYyA="
+              },
+              {
+                "url": "turn:global.turn.twilio.com:443?transport=tcp",
+                "username": "f6180cc87f3e96d0ec60ef1eb4a88f89fde83f6d969bf53eae58c89a53a0981f",
+                "urls": "turn:global.turn.twilio.com:443?transport=tcp",
+                "credential": "aQcfINjhZF21SpfVot1ALXExLZ6IgKlm30m6TOCoYyA="
+              }
         ]
     }
 
