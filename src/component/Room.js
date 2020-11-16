@@ -173,7 +173,8 @@ function Room(props) {
                 control_div = document.createElement('div'),
                 button = document.createElement('button')
 
-                vdiv.className = "relative"
+                vdiv.className = "relative w-full"
+                vdiv.style.paddingTop = "75%"
                 control_div.className = "control-panel absolute left-0 top-0 pt-2 pl-2"
                 button.className = "unmute bg-blue-600 h-8 text-sm  pl-4 pr-4 text-white shadow-sm rounded-md outline-none focus:outline-none"
                 button.innerText = "Unmute"
