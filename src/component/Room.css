@@ -4,11 +4,18 @@ body{
 
 video{
 width: 100%;
-  object-fit: cover;
+height: 100% !important;
+position: absolute;
+top: 0;
+  object-fit: contain;
+  background: #111;
   -webkit-transform: scaleX(-1);
   transform: scaleX(-1);
   border-radius: 10px;
   box-shadow:0 4px 6px -1px rgba(0, 0, 0, 0.1), 0 2px 4px -1px rgba(0, 0, 0, 0.06);
+}
+.vcontainer{
+padding-top: 75%;
 }
 
 video.zoomin{
@@ -17,11 +24,12 @@ video.zoomin{
   height: 100%;
   object-fit: contain;
   left: 0;
-  border-radius: none;
+  border-radius: 0;
   background: #000;
   z-index: 100;
   width: 100%;
 }
+
 video.sticky{
   position: fixed;
   right: 0;
@@ -30,7 +38,6 @@ video.sticky{
 }
 
 button.mute{
-  background-image: url("data:image/svg+xml;charset=utf8,%3Csvg xmlns='http://www.w3.org/2000/svg' width='24' height='24' viewBox='0 0 24 24' fill='none' stroke='%23fff' stroke-width='2.5' stroke-linecap='round' stroke-linejoin='round' class='feather feather-mic'%3E%3Cpath d='M12 1a3 3 0 0 0-3 3v8a3 3 0 0 0 6 0V4a3 3 0 0 0-3-3z'%3E%3C/path%3E%3Cpath d='M19 10v2a7 7 0 0 1-14 0v-2'%3E%3C/path%3E%3Cline x1='12' y1='19' x2='12' y2='23'%3E%3C/line%3E%3Cline x1='8' y1='23' x2='16' y2='23'%3E%3C/line%3E%3C/svg%3E");
   background-size: 1rem 1rem;
   background-repeat: no-repeat;
   background-position: center;
@@ -38,7 +45,6 @@ button.mute{
 }
 
 button.unmute{
-  background-image: url("data:image/svg+xml;charset=utf8,%3Csvg xmlns='http://www.w3.org/2000/svg' width='24' height='24' viewBox='0 0 24 24' fill='none' stroke='%23fff' stroke-width='2.5' stroke-linecap='round' stroke-linejoin='round' class='feather feather-mic-off'%3E%3Cline x1='1' y1='1' x2='23' y2='23'%3E%3C/line%3E%3Cpath d='M9 9v3a3 3 0 0 0 5.12 2.12M15 9.34V4a3 3 0 0 0-5.94-.6'%3E%3C/path%3E%3Cpath d='M17 16.95A7 7 0 0 1 5 12v-2m14 0v2a7 7 0 0 1-.11 1.23'%3E%3C/path%3E%3Cline x1='12' y1='19' x2='12' y2='23'%3E%3C/line%3E%3Cline x1='8' y1='23' x2='16' y2='23'%3E%3C/line%3E%3C/svg%3E");
   background-size: 1rem 1rem;
   background-repeat: no-repeat;
   background-position: center;
@@ -49,4 +55,14 @@ button.screenshare{
   background-size: 1rem 1rem;
   background-repeat: no-repeat;
   background-position: center;
+}
+
+button.zoomout{
+  background-image: url("data:image/svg+xml;charset=utf8,%3Csvg xmlns='http://www.w3.org/2000/svg' width='24' height='24' viewBox='0 0 24 24' fill='none' stroke='%23fff' stroke-width='2' stroke-linecap='round' stroke-linejoin='round' class='feather feather-maximize-2'%3E%3Cpolyline points='15 3 21 3 21 9'%3E%3C/polyline%3E%3Cpolyline points='9 21 3 21 3 15'%3E%3C/polyline%3E%3Cline x1='21' y1='3' x2='14' y2='10'%3E%3C/line%3E%3Cline x1='3' y1='21' x2='10' y2='14'%3E%3C/line%3E%3C/svg%3E");
+  background-size: 1rem 1rem;
+  background-repeat: no-repeat;
+  background-position: center;
+}
+.topstrip{
+  background-color: rgba(0,0,0,0.1);
 }
