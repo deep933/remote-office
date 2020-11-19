@@ -1,50 +1,27 @@
 import React from 'react'
-import { useState, useEffect } from 'react'
-import adapter from 'webrtc-adapter'
+import { useEffect } from 'react'
 import io from 'socket.io-client';
 import { useLocation } from "react-router-dom";
 import queryString from 'query-string';
 import ClipboardJs from 'clipboard'
-
 
 import './Room.css';
 
 function Room(props) {
     const location = useLocation();
     let localVideo;
-    var firstPerson = false;
-    var socketCount = 0;
     var socketId;
     var localStream;
     let socket;
     var connections = [];
     let clientlist = []
-    let stream
 
     var peerConnectionConfig = {
         'iceServers': [
             {
                 "url": "stun:global.stun.twilio.com:3478?transport=udp",
                 "urls": "stun:global.stun.twilio.com:3478?transport=udp"
-              },
-              {
-                "url": "turn:global.turn.twilio.com:3478?transport=udp",
-                "username": "f6180cc87f3e96d0ec60ef1eb4a88f89fde83f6d969bf53eae58c89a53a0981f",
-                "urls": "turn:global.turn.twilio.com:3478?transport=udp",
-                "credential": "aQcfINjhZF21SpfVot1ALXExLZ6IgKlm30m6TOCoYyA="
-              },
-              {
-                "url": "turn:global.turn.twilio.com:3478?transport=tcp",
-                "username": "f6180cc87f3e96d0ec60ef1eb4a88f89fde83f6d969bf53eae58c89a53a0981f",
-                "urls": "turn:global.turn.twilio.com:3478?transport=tcp",
-                "credential": "aQcfINjhZF21SpfVot1ALXExLZ6IgKlm30m6TOCoYyA="
-              },
-              {
-                "url": "turn:global.turn.twilio.com:443?transport=tcp",
-                "username": "f6180cc87f3e96d0ec60ef1eb4a88f89fde83f6d969bf53eae58c89a53a0981f",
-                "urls": "turn:global.turn.twilio.com:443?transport=tcp",
-                "credential": "aQcfINjhZF21SpfVot1ALXExLZ6IgKlm30m6TOCoYyA="
-              }
+            }
         ]
     }
 
@@ -136,7 +113,7 @@ function Room(props) {
     const handleScreenshare = (e) => {
         console.log(clientlist)
         var displayMediaStreamConstraints = {
-            video: true // or pass HINTS
+            video: true 
         };
 
         if (navigator.mediaDevices.getDisplayMedia) {
@@ -158,10 +135,10 @@ function Room(props) {
         clientlist.forEach(function (socketListId) {
             if (connections[socketListId]) {
 
-                //Add the local video stream
-
-
+                //Add the screen sharing video stream
                 connections[socketListId].addStream(stream)
+
+                //create new offer for screen sharing
                 connections[socketListId].createOffer().then(function (description) {
                     connections[socketListId].setLocalDescription(description).then(function () {
                         // console.log(connections);
@@ -183,70 +160,61 @@ function Room(props) {
 
     function gotRemoteStream(event, id) {
         var v = document.querySelector('[data-socket="' + id + '"]');
+        let videos = document.querySelectorAll('video'),
+            video = document.createElement('video'),
+            vdiv = document.createElement('div'),
+            control_div = document.createElement('div'),
+            zoomoutbtn = document.createElement('button'),
+            button = document.createElement('button')
 
-        
-            let videos = document.querySelectorAll('video'),
-                video = document.createElement('video'),
-                vdiv = document.createElement('div'),
-                control_div = document.createElement('div'),
-                zoomoutbtn = document.createElement('button'),
-                button = document.createElement('button')
-
-                vdiv.className = "relative w-full"
-                vdiv.style.paddingTop = "75%"
-                control_div.className = "flex control-panel absolute left-0 top-0 pt-2 pl-2"
-                zoomoutbtn.className = "zoomout bg-black h-8 w-8 text-sm text-white shadow-sm rounded-md outline-none focus:outline-none"
-                button.className = "mute bg-black h-8 text-sm  ml-2 pl-4 pr-4 text-white shadow-sm rounded-md outline-none focus:outline-none"
-                button.innerText = "Mute"
-                button.addEventListener('click', (e) => {
-                video.muted = !video.muted
-                if(video.muted){
-                    e.target.classList.replace("mute","unmute")
-                    e.target.innerText = "Unmute"
-                }
-                else{
-                    e.target.classList.replace("unmute","mute")
-                    e.target.innerText = "Mute"
-                }
-            })
-
-            if(v){
-                video.setAttribute('data-socket-2', id);
-
+        vdiv.className = "relative w-full"
+        vdiv.style.paddingTop = "75%"
+        control_div.className = "flex control-panel absolute left-0 top-0 pt-2 pl-2"
+        zoomoutbtn.className = "zoomout bg-black h-8 w-8 text-sm text-white shadow-sm rounded-md outline-none focus:outline-none"
+        button.className = "mute bg-black h-8 text-sm  ml-2 pl-4 pr-4 text-white shadow-sm rounded-md outline-none focus:outline-none"
+        button.innerText = "Mute"
+        button.addEventListener('click', (e) => {
+            video.muted = !video.muted
+            if (video.muted) {
+                e.target.classList.replace("mute", "unmute")
+                e.target.innerText = "Unmute"
             }
-            video.setAttribute('data-socket', id);
-            
-            video.srcObject = event.stream;
-            video.autoplay = true;
-            video.muted = false;
-            video.loop = true;
-            video.playsInline = true;
+            else {
+                e.target.classList.replace("unmute", "mute")
+                e.target.innerText = "Mute"
+            }
+        })
 
-            
+        if (v) {
+            video.setAttribute('data-socket-2', id);
+        }
 
-            zoomoutbtn.addEventListener('click',()=>{
-               
-                    video.className = "zoomin"
-            })
+        video.setAttribute('data-socket', id);
 
-            video.addEventListener('click',()=>{
-                if (video.className == "zoomin") {
-                    video.className = "zoomout"
-                }
-            })
+        video.srcObject = event.stream;
+        video.autoplay = true;
+        video.muted = false;
+        video.loop = true;
+        video.playsInline = true;
 
-            control_div.appendChild(zoomoutbtn)
-            control_div.appendChild(button)
-            vdiv.appendChild(video);
-            vdiv.appendChild(control_div);
-            document.querySelector('.videos').appendChild(vdiv);
+        zoomoutbtn.addEventListener('click', () => {
+            video.className = "zoomin"
+        })
 
-          
-            
-       
+        video.addEventListener('click', () => {
+            if (video.className == "zoomin") {
+                video.className = "zoomout"
+            }
+        })
+
+        control_div.appendChild(zoomoutbtn)
+        control_div.appendChild(button)
+        vdiv.appendChild(video);
+        vdiv.appendChild(control_div);
+        document.querySelector('.videos').appendChild(vdiv);
     }
 
-    function gotMessageFromServer(fromId, message) {
+    const gotMessageFromServer = (fromId, message) =>{
 
         //Parse the incoming signal
         var signal = JSON.parse(message)
@@ -260,7 +228,7 @@ function Room(props) {
                         if (signal.type == 'screen') {
                             handleScreenShareResponse(fromId)
                         }
-                        else{
+                        else {
 
                         }
                         connections[fromId].createAnswer().then(function (description) {
@@ -278,13 +246,13 @@ function Room(props) {
         }
     }
 
-    const handleScreenShareResponse = (id) =>{
+    const handleScreenShareResponse = (id) => {
         let video = document.querySelector('[data-socket-2="' + id + '"]')
         video.style.transform = "scaleX(1)"
         // video.className = "zoomin"
     }
 
-    const handleVideoClickListner = (e) =>{
+    const handleVideoClickListner = (e) => {
         if (e.target.className == "zoomin") {
             e.target.className = "zoomout"
         }
@@ -293,45 +261,41 @@ function Room(props) {
         }
     }
 
-    const handleLocalVideoMic = (e) =>{
+    const handleLocalVideoMic = (e) => {
         let video = document.getElementById("localVideo")
         video.muted = !video.muted
-                if(video.muted){
-                    e.target.classList.replace("mute","unmute")
-                    e.target.value = "unmute"
-                    
-                }
-                else{
-                    e.target.classList.replace("unmute","mute")
-                    e.target.valye = "mute"
+        if (video.muted) {
+            e.target.classList.replace("mute", "unmute")
+            e.target.value = "unmute"
 
-                }
-    } 
+        }
+        else {
+            e.target.classList.replace("unmute", "mute")
+            e.target.valye = "mute"
+
+        }
+    }
 
     return (
         <div className="Room">
             <div className="topstrip mb-6 flex p-2 text-white text-sm items-center justify-center sm:flex-col md:flex-row lg:flex-row flex-col">
-    Invite Others <p className="text-white ml-4">{window.location.href}</p><button data-clipboard-text={window.location.href} className="copy bg-black ml-4 h-8 text-sm  pl-4 pr-4 text-white shadow-sm rounded-md outline-none focus:outline-none">Copy & Share</button>
+                Invite Others <p className="text-white ml-4">{window.location.href}</p><button data-clipboard-text={window.location.href} className="copy bg-black ml-4 h-8 text-sm  pl-4 pr-4 text-white shadow-sm rounded-md outline-none focus:outline-none">Copy & Share</button>
             </div>
             <div class="videos grid md:grid-cols-3 sm:grid-cols-1 gap-3 md:m-6 sm:m-4 m-4">
                 <div className="vcontainer relative" >
                     <video id="localVideo" muted loop playsInline autoPlay></video>
                     <div className="control-panel absolute left-0 top-0 pt-2 pl-2">
-                    <button onClick={handleScreenshare} className="screenshare bg-black h-10 w-10 pl-4 pr-4 text-white shadow-sm rounded-md outline-none focus:outline-none"
-                    ></button>
-           
+                        <button onClick={handleScreenshare} className="screenshare bg-black h-10 w-10 pl-4 pr-4 text-white shadow-sm rounded-md outline-none focus:outline-none"
+                        ></button>
+
                     </div>
-                    
+
 
                 </div>
             </div>
 
             <br />
             <div id="connections"></div>
-
-
-
-
         </div>
     );
 }

@@ -7,11 +7,14 @@
 
 # testing
 /coverage
+/doc
+/.vscode
 
 # production
 /build
 
 # misc
+/src/assets/main.css
 .DS_Store
 .env.local
 .env.development.local
