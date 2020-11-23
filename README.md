@@ -6,10 +6,6 @@
 * [Socket.io](https://socket.io/)
 * [Node (Express.js)](https://expressjs.com/)
 
-## Getting Started
-```sh
-npm install 
-```
-```sh
-npm start
-```
+## Demo (https://remotee-office.herokuapp.com/create)
+
+![remoteoffice](https://i.ibb.co/rpQJ2wW/screely-1606164795427.png)
